@@ -1,8 +1,7 @@
 # coding=utf-8
 '''
 修改时间即可，start_time、end_time 按照格式修改
-此脚本下载数据后会进行预处理
-因此在原来的步骤中的预处理过程可以跳过
+注意：此文件仅用于下载，下载的文件是按天分割的
 '''
 
 # Import modules and functions
@@ -45,7 +44,7 @@ def process():
             sth = client.get_waveforms(network, station, '*', \
                                        'BHZ', tstart, tend, attach_response=True)
         except Exception as e:
-            print "Failed on" + str(jd) + "due to" + str(e)
+            print "Failed on " + str(tstart) + " due to " + str(e)
             tstart = tend
             tend = tstart + 3600.* 24.
             continue
@@ -53,25 +52,26 @@ def process():
             stp = client.get_waveforms(network, station, '*', \
                                        'HDH', tstart, tend, attach_response=True)
         except Exception as e:
-            print "Failed on" + str(jd) + "due to" + str(e)
+            print "Failed on " + str(tstart) + " due to " + str(e)
             tstart = tend
             tend = tstart + 3600. * 24.
             continue
 
-        sth.remove_response(output='DISP')
-        stp.remove_response()
-
-        # Detrend, filter
-        sth.detrend('demean')
-        sth.detrend('linear')
-        sth.filter('lowpass', freq=0.5 * 4.0, corners=2, zerophase=True)
-        sth.decimate(10)
-
-        stp.detrend('demean')
-        stp.detrend('linear')
-        stp.filter('lowpass', freq=0.5 * 4.0, corners=2, zerophase=True)
-        stp.decimate(10)
-        stp.decimate(5)
+        # 以下注释部分暂时存在问题，取消使用，此文件仅用于下载
+        # sth.remove_response(output='DISP')
+        # stp.remove_response()
+        #
+        # # Detrend, filter
+        # sth.detrend('demean')
+        # sth.detrend('linear')
+        # sth.filter('lowpass', freq=0.5 * 4.0, corners=2, zerophase=True)
+        # sth.decimate(10)
+        #
+        # stp.detrend('demean')
+        # stp.detrend('linear')
+        # stp.filter('lowpass', freq=0.5 * 4.0, corners=2, zerophase=True)
+        # stp.decimate(10)
+        # stp.decimate(5)
 
         # Extract traces
         trZ = sth.select(component='Z')[0]
